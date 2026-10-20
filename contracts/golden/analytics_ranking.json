@@ -1,0 +1,95 @@
+{
+  "asOf": "2026-10-20",
+  "minSample": 5,
+  "blocks": [
+    {
+      "characteristic": {
+        "id": 1,
+        "name": "Критическое мышление",
+        "nameI18n": {
+          "kk": "Сыни ойлау",
+          "ru": "Критическое мышление"
+        },
+        "core": true
+      },
+      "insufficient": false,
+      "employees": {
+        "total": 30,
+        "items": [
+          {
+            "rank": 1,
+            "user": {
+              "id": 9,
+              "fullName": "Ерлан Касымов"
+            },
+            "department": {
+              "id": 3,
+              "name": "Отдел продаж",
+              "active": true
+            },
+            "score": 91.7,
+            "measuredAt": "2026-10-15T14:05:00Z"
+          },
+          {
+            "rank": 1,
+            "user": {
+              "id": 8,
+              "fullName": "Дана Ахметова"
+            },
+            "department": {
+              "id": 6,
+              "name": "Снабжение",
+              "active": false
+            },
+            "score": 91.7,
+            "measuredAt": "2026-10-01T09:30:00Z"
+          },
+          {
+            "rank": 3,
+            "user": {
+              "id": 7,
+              "fullName": "Арман Нурланов"
+            },
+            "department": null,
+            "score": 70,
+            "measuredAt": "2026-10-15T14:05:00Z"
+          }
+        ]
+      },
+      "departments": [
+        {
+          "rank": 1,
+          "department": {
+            "id": 3,
+            "name": "Отдел продаж",
+            "active": true
+          },
+          "value": 72.4,
+          "employees": 12,
+          "attempts": 25
+        },
+        {
+          "rank": 2,
+          "department": null,
+          "value": 61,
+          "employees": 18,
+          "attempts": 45
+        }
+      ]
+    },
+    {
+      "characteristic": {
+        "id": 5,
+        "name": "Работа в команде",
+        "nameI18n": null,
+        "core": false
+      },
+      "insufficient": true,
+      "employees": {
+        "total": 3,
+        "items": []
+      },
+      "departments": []
+    }
+  ]
+}

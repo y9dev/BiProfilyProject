@@ -1,0 +1,44 @@
+{
+  "threshold": 15,
+  "total": 2,
+  "items": [
+    {
+      "user": {
+        "id": 8,
+        "fullName": "Дана Ахметова"
+      },
+      "department": {
+        "id": 6,
+        "name": "Снабжение",
+        "active": false
+      },
+      "characteristicId": 1,
+      "from": {
+        "score": 80,
+        "at": "2026-10-01T09:30:00Z"
+      },
+      "to": {
+        "score": 57.5,
+        "at": "2026-10-15T14:05:00Z"
+      },
+      "delta": -22.5
+    },
+    {
+      "user": {
+        "id": 7,
+        "fullName": "Арман Нурланов"
+      },
+      "department": null,
+      "characteristicId": 5,
+      "from": {
+        "score": 50,
+        "at": "2026-10-01T09:30:00Z"
+      },
+      "to": {
+        "score": 66.67,
+        "at": "2026-10-15T14:05:00Z"
+      },
+      "delta": 16.67
+    }
+  ]
+}

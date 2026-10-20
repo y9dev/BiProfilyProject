@@ -1,0 +1,83 @@
+{
+  "period": {
+    "from": "2026-10-18",
+    "to": "2026-10-20",
+    "granularity": "day",
+    "timezone": "Asia/Almaty"
+  },
+  "minSample": 5,
+  "points": [
+    "2026-10-18",
+    "2026-10-19",
+    "2026-10-20"
+  ],
+  "series": [
+    {
+      "characteristic": {
+        "id": 1,
+        "name": "Критическое мышление",
+        "nameI18n": {
+          "kk": "Сыни ойлау",
+          "ru": "Критическое мышление"
+        },
+        "core": true
+      },
+      "values": [
+        {
+          "value": null,
+          "employees": 0,
+          "attempts": 0,
+          "insufficient": true
+        },
+        {
+          "value": null,
+          "employees": 3,
+          "attempts": 4,
+          "insufficient": true
+        },
+        {
+          "value": 61.4,
+          "employees": 12,
+          "attempts": 30,
+          "insufficient": false
+        }
+      ]
+    },
+    {
+      "characteristic": {
+        "id": 3,
+        "name": "Дисциплина",
+        "nameI18n": {
+          "kk": "Тәртіптілік",
+          "ru": "Дисциплина"
+        },
+        "core": true
+      },
+      "values": [
+        {
+          "value": null,
+          "employees": 0,
+          "attempts": 0,
+          "insufficient": true
+        },
+        {
+          "value": null,
+          "employees": 0,
+          "attempts": 0,
+          "insufficient": true
+        },
+        {
+          "value": null,
+          "employees": 3,
+          "attempts": 4,
+          "insufficient": true
+        }
+      ]
+    }
+  ],
+  "summary": {
+    "employees": 40,
+    "measuredEmployees": 32,
+    "attemptsInPeriod": 55
+  }
+}

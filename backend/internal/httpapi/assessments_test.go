@@ -89,20 +89,12 @@ func TestList_CompletionState(t *testing.T) {
 	res := empDecode[dto.SubmitResult](t, rec)
 
 	items := empDecode[[]dto.AssessmentListItem](t, do(t, srv, j1, "GET", "/api/assessments", nil, ""))
-	if len(items) != 2 {
-		t.Fatalf("list: %+v", items)
+	// Completed tests leave the list (they live in the profile history); the next one opens up.
+	if len(items) != 1 || items[0].ID != b.ID || items[0].Completed || items[0].AttemptID != nil {
+		t.Fatalf("list must hold only B for emp1: %+v", items)
 	}
-	for _, it := range items {
-		switch it.ID {
-		case a.ID:
-			if !it.Completed || it.AttemptID == nil || *it.AttemptID != res.AttemptID {
-				t.Errorf("A for emp1: %+v", it)
-			}
-		case b.ID:
-			if it.Completed || it.AttemptID != nil {
-				t.Errorf("B for emp1: %+v", it)
-			}
-		}
+	if res.AttemptID == 0 {
+		t.Fatalf("submit result: %+v", res)
 	}
 	// Completion is per user.
 	for _, it := range empDecode[[]dto.AssessmentListItem](t, do(t, srv, j2, "GET", "/api/assessments", nil, "")) {

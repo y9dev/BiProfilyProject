@@ -19,8 +19,8 @@ Employee assessment platform: managers build assessments whose answers shift emp
 ## Roles
 
 - `employee` - registers (with or without an invitation code), picks an avatar (required before anything else), takes each assessment once, sees results and profile dynamics.
-- `manager` - invitations (with QR), assessments (wizard), characteristics, departments.
-- `admin` - everything above plus user management (roles, blocking) and audit.
+- `manager` - invitations (with QR), assessments (wizard), characteristics, departments. The dashboard shows the company trend of the core characteristics and Team status (participation, per-test completion, employees needing attention); values from fewer than 5 employees are hidden.
+- `admin` - everything above plus user management (roles, blocking), audit and the Analytics page (`/analytics`: trends with any characteristics and periods, participation, department comparison, employee view, ranking, significant changes). On the dashboard an admin also sees small-sample values (dimmed).
 
 The first admin is created at start from `ADMIN_LOGIN` / `ADMIN_PASSWORD` when the users table is empty.
 

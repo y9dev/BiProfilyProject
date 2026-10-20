@@ -3,7 +3,7 @@
 //   signed in         /onboarding/avatar            (profile may be incomplete)
 //   signed in + gate  /  /assessments/:id/take  /results/:attemptId
 //   manager|admin     /manage/*
-//   admin             /admin
+//   admin             /admin  /analytics
 import { lazy } from 'react'
 import { Navigate, Route, Routes } from 'react-router-dom'
 import { PublicOnly, RequireAuth, RequireAvatar, RequireRole } from './auth/guards'
@@ -23,6 +23,7 @@ const AssessmentWizard = lazy(() => import('./features/manager/wizard/Assessment
 const CharacteristicsPage = lazy(() => import('./features/manager/characteristics/CharacteristicsPage'))
 const DepartmentsPage = lazy(() => import('./features/manager/departments/DepartmentsPage'))
 const AdminPage = lazy(() => import('./features/admin/AdminPage'))
+const AnalyticsPage = lazy(() => import('./features/analytics/AnalyticsPage'))
 
 const MANAGER_ROLES = ['manager', 'admin']
 
@@ -58,6 +59,7 @@ export default function App() {
 
             <Route element={<RequireRole roles={['admin']} />}>
               <Route path="/admin" element={<AdminPage />} />
+              <Route path="/analytics" element={<AnalyticsPage />} />
             </Route>
 
             <Route path="*" element={<NotFoundPage />} />

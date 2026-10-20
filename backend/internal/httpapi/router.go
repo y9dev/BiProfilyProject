@@ -1,6 +1,7 @@
 // Package httpapi is the HTTP layer: routing, JSON, CORS.
 // Routes are registered per area (registerAuthRoutes, registerEmployeeRoutes,
-// registerManagerRoutes, registerAdminRoutes) through the protected()/public()
+// registerManagerRoutes, registerAdminRoutes, registerDashboardRoutes,
+// registerAnalyticsRoutes) through the protected()/public()
 // helpers in routes.go, which apply auth, the avatar gate, roles and CSRF.
 package httpapi
 
@@ -16,6 +17,7 @@ import (
 	"github.com/redis/go-redis/v9"
 
 	"bigroup-backend/internal/admin"
+	"bigroup-backend/internal/analytics"
 	"bigroup-backend/internal/auth"
 	"bigroup-backend/internal/httpapi/dto"
 	"bigroup-backend/internal/invitations"
@@ -33,23 +35,29 @@ type Deps struct {
 	FrontOrigin string
 	// TrustedProxies are the proxy CIDRs whose X-Forwarded-For is honoured (auth.ClientIP).
 	TrustedProxies []netip.Prefix
+	// Analytics backs /api/dashboard/* and /api/analytics/*; nil = analytics.New(Pool, Redis).
+	Analytics analytics.Repo
+	// AnalyticsTimeout bounds each analytics request; 0 = analytics.QueryTimeout.
+	AnalyticsTimeout time.Duration
 }
 
 type Server struct {
-	mux           *http.ServeMux
-	pool          *pgxpool.Pool
-	rdb           *redis.Client
-	users         users.Repository
-	admin         admin.Repository
-	invitations   invitations.Repository
-	sessions      *auth.Manager
-	loginLim      *auth.Limiter
-	regLim        *auth.Limiter
-	widgetLim     *auth.Limiter
-	widgetProfile func(ctx context.Context, userID int64) (dto.Profile, error)
-	origin        string
-	trusted       []netip.Prefix
-	routes        []RouteMeta
+	mux              *http.ServeMux
+	pool             *pgxpool.Pool
+	rdb              *redis.Client
+	users            users.Repository
+	admin            admin.Repository
+	invitations      invitations.Repository
+	sessions         *auth.Manager
+	loginLim         *auth.Limiter
+	regLim           *auth.Limiter
+	widgetLim        *auth.Limiter
+	widgetProfile    func(ctx context.Context, userID int64) (dto.Profile, error)
+	origin           string
+	trusted          []netip.Prefix
+	routes           []RouteMeta
+	analytics        analytics.Repo
+	analyticsTimeout time.Duration
 }
 
 func New(d Deps) *Server {
@@ -61,6 +69,13 @@ func New(d Deps) *Server {
 		widgetLim: auth.NewLimiter(2, 30, d.TrustedProxies),
 		origin:    d.FrontOrigin,
 		trusted:   d.TrustedProxies,
+		analytics: d.Analytics, analyticsTimeout: d.AnalyticsTimeout,
+	}
+	if s.analytics == nil {
+		s.analytics = analytics.New(d.Pool, d.Redis)
+	}
+	if s.analyticsTimeout <= 0 {
+		s.analyticsTimeout = analytics.QueryTimeout
 	}
 	s.public("GET /api/health", http.HandlerFunc(s.health))
 	s.registerAuthRoutes()
@@ -68,6 +83,8 @@ func New(d Deps) *Server {
 	s.registerEmployeeRoutes()
 	s.registerManagerRoutes()
 	s.registerAdminRoutes()
+	s.registerDashboardRoutes()
+	s.registerAnalyticsRoutes()
 	return s
 }
 

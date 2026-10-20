@@ -1,0 +1,57 @@
+{
+  "period": {
+    "from": "2026-10-18",
+    "to": "2026-10-20",
+    "granularity": "day",
+    "timezone": "Asia/Almaty"
+  },
+  "company": {
+    "employees": 40,
+    "participated": 22,
+    "attempts": 55,
+    "rate": 0.55
+  },
+  "departments": [
+    {
+      "department": {
+        "id": 3,
+        "name": "Отдел продаж",
+        "active": true
+      },
+      "employees": 12,
+      "participated": 7,
+      "attempts": 15,
+      "rate": 0.5833,
+      "insufficient": false
+    },
+    {
+      "department": {
+        "id": 6,
+        "name": "Снабжение",
+        "active": false
+      },
+      "employees": 3,
+      "participated": 2,
+      "attempts": 2,
+      "rate": null,
+      "insufficient": true
+    },
+    {
+      "department": null,
+      "employees": 25,
+      "participated": 13,
+      "attempts": 38,
+      "rate": 0.52,
+      "insufficient": false
+    }
+  ],
+  "tests": [
+    {
+      "id": 9,
+      "title": "Планирование смены",
+      "completed": 18,
+      "employees": 40,
+      "rate": 0.45
+    }
+  ]
+}

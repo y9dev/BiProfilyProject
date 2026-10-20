@@ -14,12 +14,13 @@ import { fileURLToPath } from 'node:url';
 const goldenDir = join(dirname(fileURLToPath(import.meta.url)), '..', '..', '..', 'contracts', 'golden');
 
 // ---- tiny schema language ----
-// 'string' | 'number' | 'integer' | 'boolean' | 'iso' (RFC 3339 timestamp)
+// 'string' | 'number' | 'integer' | 'boolean' | 'iso' (RFC 3339 timestamp) | 'date' (YYYY-MM-DD)
 // nullable(s), optional(s) (key may be absent), oneOf(...values), [s] (array of s), { key: s } (exact keys)
 const nullable = (s) => ({ kind: 'nullable', s });
 const optional = (s) => ({ kind: 'optional', s });
 const oneOf = (...values) => ({ kind: 'oneOf', values });
 const ISO = /^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(\.\d+)?(Z|[+-]\d{2}:\d{2})$/;
+const DATE = /^\d{4}-\d{2}-\d{2}$/;
 
 function check(value, schema, path) {
   if (typeof schema === 'string') {
@@ -29,6 +30,7 @@ function check(value, schema, path) {
       integer: () => Number.isInteger(value),
       boolean: () => typeof value === 'boolean',
       iso: () => typeof value === 'string' && ISO.test(value),
+      date: () => typeof value === 'string' && DATE.test(value),
     }[schema];
     assert.ok(ok, `${path}: unknown schema type ${schema}`);
     assert.ok(ok(), `${path}: expected ${schema}, got ${JSON.stringify(value)}`);
@@ -87,6 +89,36 @@ const invitation = {
 const assessmentStatus = oneOf('active', 'hidden', 'expired');
 const registerOptions = { valid: 'boolean', reason: optional('string'), departments: optional([departmentRef]) };
 const error = { error: 'string', message: optional('string'), errors: optional([{ path: 'string', code: 'string' }]) };
+
+// ---- dashboard / analytics shapes ----
+const day = 'date'; // YYYY-MM-DD (Asia/Almaty calendar day)
+const userRef = { id: 'integer', fullName: 'string' };
+const aDept = nullable({ id: 'integer', name: 'string', active: 'boolean' });
+const charRef = { id: 'integer', name: 'string', nameI18n: i18n, core: 'boolean' };
+const period = { from: day, to: day, granularity: oneOf('day', 'week', 'month'), timezone: 'string' };
+const valuePoint = { value: nullable('number'), employees: 'integer', attempts: 'integer', insufficient: 'boolean' };
+const trend = {
+  period,
+  minSample: 'integer',
+  points: [day],
+  series: [{ characteristic: charRef, values: [valuePoint] }],
+  summary: { employees: 'integer', measuredEmployees: 'integer', attemptsInPeriod: 'integer' },
+};
+const testCompletion = {
+  id: 'integer',
+  title: 'string',
+  completed: 'integer',
+  employees: 'integer',
+  rate: nullable('number'),
+};
+const reason = {
+  code: oneOf('drop', 'inactive', 'no_first_test'),
+  characteristicId: optional('integer'),
+  delta: optional('number'),
+  at: optional(day),
+  days: optional('integer'),
+};
+const changePoint = { score: 'number', at: 'iso' };
 
 // ---- one schema per golden file ----
 const schemas = {
@@ -212,6 +244,125 @@ const schemas = {
   },
   'error_validation.json': error,
   'error.json': error,
+  'dashboard_trend.json': trend,
+  'analytics_trend.json': {
+    ...trend,
+    defaultIds: ['integer'],
+    characteristics: [{ ...charRef, employees: 'integer', attempts: 'integer', eligible: 'boolean' }],
+  },
+  'team_status.json': {
+    asOf: day,
+    inactiveDays: 'integer',
+    dropThreshold: 'integer',
+    kpis: {
+      employees: 'integer',
+      participated: 'integer',
+      noAttempts: 'integer',
+      activeRecently: 'integer',
+      inactive: 'integer',
+      participationRate: nullable('number'),
+    },
+    tests: [testCompletion],
+    attention: {
+      total: 'integer',
+      counts: { noFirstTest: 'integer', inactive: 'integer', drop: 'integer' },
+      items: [{ user: userRef, department: aDept, lastAttemptAt: nullable('iso'), reasons: [reason] }],
+    },
+  },
+  'analytics_participation.json': {
+    period,
+    company: { employees: 'integer', participated: 'integer', attempts: 'integer', rate: nullable('number') },
+    departments: [
+      {
+        department: aDept,
+        employees: 'integer',
+        participated: 'integer',
+        attempts: 'integer',
+        rate: nullable('number'),
+        insufficient: 'boolean',
+      },
+    ],
+    tests: [testCompletion],
+  },
+  'analytics_departments.json': {
+    period,
+    points: [day],
+    blocks: [
+      {
+        characteristic: charRef,
+        company: { values: [valuePoint] },
+        departments: [
+          {
+            department: aDept,
+            employees: 'integer',
+            attemptsInPeriod: 'integer',
+            values: [valuePoint],
+            current: { ...valuePoint, vsCompany: nullable('number') },
+          },
+        ],
+      },
+    ],
+  },
+  'analytics_employees.json': {
+    total: 'integer',
+    items: [
+      {
+        id: 'integer',
+        fullName: 'string',
+        jobTitle: 'string',
+        department: aDept,
+        attempts: 'integer',
+        lastAttemptAt: nullable('iso'),
+        dataState: oneOf('ok', 'no_data', 'stale'),
+      },
+    ],
+  },
+  'analytics_employee.json': {
+    user: {
+      id: 'integer',
+      fullName: 'string',
+      jobTitle: 'string',
+      department: aDept,
+      status: oneOf('active', 'blocked'),
+      lastAttemptAt: nullable('iso'),
+    },
+    asOf: day,
+    current: [
+      { characteristic: charRef, score: 'number', measuredAt: 'iso', company: valuePoint, department: valuePoint },
+    ],
+    history: [{ attemptId: 'integer', assessmentTitle: 'string', completedAt: 'iso', scores: [score] }],
+  },
+  'analytics_ranking.json': {
+    asOf: day,
+    minSample: 'integer',
+    blocks: [
+      {
+        characteristic: charRef,
+        insufficient: 'boolean',
+        employees: {
+          total: 'integer',
+          items: [{ rank: 'integer', user: userRef, department: aDept, score: 'number', measuredAt: 'iso' }],
+        },
+        departments: [
+          { rank: 'integer', department: aDept, value: 'number', employees: 'integer', attempts: 'integer' },
+        ],
+      },
+    ],
+  },
+  'analytics_changes.json': {
+    threshold: 'integer',
+    total: 'integer',
+    items: [
+      {
+        user: userRef,
+        department: aDept,
+        characteristicId: 'integer',
+        from: changePoint,
+        to: changePoint,
+        delta: 'number',
+      },
+    ],
+  },
 };
 
 const load = (name) => JSON.parse(readFileSync(join(goldenDir, name), 'utf8'));
@@ -246,4 +397,41 @@ test('validation errors use the {error, errors:[{path, code}]} envelope', () => 
   const body = load('error_validation.json');
   assert.equal(body.error, 'validation');
   assert.ok(body.errors.length > 0);
+});
+
+// Every object carrying both `core` and `nameI18n`: the frontend heuristic
+// (nameI18n != null, features/employee/trends.js) must agree with the server's is_default.
+test('core === (nameI18n !== null) in every golden', () => {
+  let seen = 0;
+  const walk = (v, path) => {
+    if (Array.isArray(v)) return v.forEach((x, i) => walk(x, `${path}[${i}]`));
+    if (v === null || typeof v !== 'object') return;
+    if ('core' in v && 'nameI18n' in v) {
+      seen++;
+      assert.equal(v.core, v.nameI18n !== null, `${path}: core=${v.core} but nameI18n=${JSON.stringify(v.nameI18n)}`);
+    }
+    for (const [k, x] of Object.entries(v)) walk(x, `${path}.${k}`);
+  };
+  for (const f of readdirSync(goldenDir).filter((f) => f.endsWith('.json'))) walk(load(f), f);
+  assert.ok(seen > 0, 'no characteristic refs found');
+});
+
+test('analytics goldens cover the required fixture variants', () => {
+  const raw = (name) => readFileSync(join(goldenDir, name), 'utf8');
+  const points = (name) => load(name).series.flatMap((s) => s.values);
+  // null gap; insufficient with a value (admin) and with null (manager)
+  assert.ok(points('dashboard_trend.json').some((p) => p.employees === 0 && p.value === null));
+  assert.ok(points('dashboard_trend.json').some((p) => p.employees > 0 && p.insufficient && p.value === null));
+  assert.ok(points('analytics_trend.json').some((p) => p.insufficient && p.value !== null));
+  // every reason variant, department null, lastAttemptAt null, inactive department
+  const items = load('team_status.json').attention.items;
+  const codes = new Set(items.flatMap((i) => i.reasons.map((r) => r.code)));
+  assert.deepEqual([...codes].sort(), ['drop', 'inactive', 'no_first_test']);
+  assert.ok(items.some((i) => i.department === null && i.lastAttemptAt === null));
+  assert.ok(items.some((i) => i.department?.active === false));
+  // an insufficient ranking block without employee items
+  assert.ok(load('analytics_ranking.json').blocks.some((b) => b.insufficient && b.employees.items.length === 0));
+  for (const name of ['analytics_participation.json', 'analytics_departments.json', 'analytics_employees.json', 'analytics_changes.json']) {
+    assert.ok(raw(name).includes('"department": null'), `${name}: no department:null fixture`);
+  }
 });

@@ -74,3 +74,39 @@ export const admin = {
   unblock: (userId) => api.post(`/api/admin/users/${id(userId)}/unblock`),
   resetPassword: (userId, password) => api.post(`/api/admin/users/${id(userId)}/reset-password`, { password }),
 }
+
+// Query string for the dashboard/analytics routes: array values become repeated params
+// (characteristics=1&characteristics=7) via URLSearchParams.append; empty values are dropped.
+function withParams(path, params) {
+  const qs = new URLSearchParams()
+  for (const [k, v] of Object.entries(params || {})) {
+    for (const item of Array.isArray(v) ? v : [v]) {
+      if (item !== undefined && item !== null && item !== '') qs.append(k, String(item))
+    }
+  }
+  const s = qs.toString()
+  return s ? `${path}?${s}` : path
+}
+
+// Manager + admin. params: { period } (presets only, no custom).
+export const dashboard = {
+  trend: (params, opts) => api.get(withParams('/api/dashboard/trend', params), opts),
+  teamStatus: (opts) => api.get('/api/dashboard/team-status', opts),
+}
+
+// Admin only. Shared params: { period, from, to, characteristics: number[] }; see backend/README.md.
+export const analytics = {
+  trend: (params, opts) => api.get(withParams('/api/analytics/trend', params), opts),
+  // { period, from, to, departmentId }
+  participation: (params, opts) => api.get(withParams('/api/analytics/participation', params), opts),
+  // { period, from, to, characteristics, departments: (number|'none')[] }
+  departments: (params, opts) => api.get(withParams('/api/analytics/departments', params), opts),
+  // { search, departmentId, data: 'all'|'no_data'|'stale', limit, offset }
+  employees: (params, opts) => api.get(withParams('/api/analytics/employees', params), opts),
+  // { period, from, to }
+  employee: (userId, params, opts) => api.get(withParams(`/api/analytics/employees/${id(userId)}`, params), opts),
+  // { period, from, to, characteristics, departmentId, limit, offset }
+  ranking: (params, opts) => api.get(withParams('/api/analytics/ranking', params), opts),
+  // { period, from, to, characteristics, departmentId, threshold, limit, offset }
+  changes: (params, opts) => api.get(withParams('/api/analytics/changes', params), opts),
+}

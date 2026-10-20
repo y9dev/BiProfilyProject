@@ -38,6 +38,13 @@
   --core-3: #b45309;
   --core-4: #6d28d9;
   --extra: #8a96a3;
+  /* Additional characteristics on company charts (always dashed, so colour is never the only cue). */
+  --extra-1: #be185d;
+  --extra-2: #0f766e;
+  --extra-3: #4338ca;
+  --extra-4: #9a3412;
+  --extra-5: #475569;
+  --extra-6: #86198f;
 
   --ring: #0f4c81;
   --overlay: rgb(10 18 28 / 0.55);
@@ -74,6 +81,12 @@
   --core-3: #fbbf24;
   --core-4: #c4b5fd;
   --extra: #7d8a99;
+  --extra-1: #f472b6;
+  --extra-2: #2dd4bf;
+  --extra-3: #a5b4fc;
+  --extra-4: #fb923c;
+  --extra-5: #a3b1c2;
+  --extra-6: #e879f9;
 
   --ring: #82b9ec;
   --overlay: rgb(0 0 0 / 0.65);
@@ -233,6 +246,13 @@
   .radar-grow {
     transform-box: view-box;
     animation: bip-radar-grow 0.6s cubic-bezier(0.22, 0.61, 0.36, 1) both;
+  }
+
+  /* Chart line reveal: a clip rect that grows left to right. */
+  .chart-reveal {
+    transform-box: fill-box;
+    transform-origin: left center;
+    animation: bip-bar-grow 0.9s cubic-bezier(0.22, 0.61, 0.36, 1) both;
   }
 
   .bar-grow {

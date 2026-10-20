@@ -1,0 +1,40 @@
+{
+  "total": 3,
+  "items": [
+    {
+      "id": 7,
+      "fullName": "Арман Нурланов",
+      "jobTitle": "Инженер ПТО",
+      "department": null,
+      "attempts": 0,
+      "lastAttemptAt": null,
+      "dataState": "no_data"
+    },
+    {
+      "id": 8,
+      "fullName": "Дана Ахметова",
+      "jobTitle": "",
+      "department": {
+        "id": 6,
+        "name": "Снабжение",
+        "active": false
+      },
+      "attempts": 2,
+      "lastAttemptAt": "2026-10-01T09:30:00Z",
+      "dataState": "stale"
+    },
+    {
+      "id": 9,
+      "fullName": "Ерлан Касымов",
+      "jobTitle": "Прораб",
+      "department": {
+        "id": 3,
+        "name": "Отдел продаж",
+        "active": true
+      },
+      "attempts": 5,
+      "lastAttemptAt": "2026-10-15T14:05:00Z",
+      "dataState": "ok"
+    }
+  ]
+}

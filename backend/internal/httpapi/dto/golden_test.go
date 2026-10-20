@@ -50,6 +50,141 @@ var effectsSample = []Effect{
 	{CharacteristicID: 3, Level: "low", Direction: -1},
 }
 
+// ---------- dashboard / analytics samples ----------
+
+var (
+	chCT      = CharacteristicRef{ID: 1, Name: "Критическое мышление", NameI18n: i18nCT, Core: true}
+	chDsc     = CharacteristicRef{ID: 3, Name: "Дисциплина", NameI18n: i18nDsc, Core: true}
+	chTeam    = CharacteristicRef{ID: 5, Name: "Работа в команде", NameI18n: nil, Core: false}
+	aDept     = &AnalyticsDepartmentRef{ID: 3, Name: "Отдел продаж", Active: true}
+	aDeptOff  = &AnalyticsDepartmentRef{ID: 6, Name: "Снабжение", Active: false}
+	periodDay = PeriodInfo{From: "2026-10-18", To: "2026-10-20", Granularity: "day", Timezone: "Asia/Almaty"}
+	daysPts   = []string{"2026-10-18", "2026-10-19", "2026-10-20"}
+	vpGap     = ValuePoint{Value: nil, Employees: 0, Attempts: 0, Insufficient: true}
+	vpSmall   = ValuePoint{Value: nil, Employees: 3, Attempts: 4, Insufficient: true}       // manager / group form
+	vpSmallV  = ValuePoint{Value: ptr(58.3), Employees: 3, Attempts: 4, Insufficient: true} // admin company form
+	vpOK      = ValuePoint{Value: ptr(61.4), Employees: 12, Attempts: 30, Insufficient: false}
+	vpOK2     = ValuePoint{Value: ptr(64.2), Employees: 30, Attempts: 70, Insufficient: false}
+)
+
+var sampleTrend = TrendResponse{
+	Period: periodDay, MinSample: 5, Points: daysPts,
+	Series: []TrendSeries{
+		{Characteristic: chCT, Values: []ValuePoint{vpGap, vpSmall, vpOK}},
+		{Characteristic: chDsc, Values: []ValuePoint{vpGap, vpGap, vpSmall}},
+	},
+	Summary: TrendSummary{Employees: 40, MeasuredEmployees: 32, AttemptsInPeriod: 55},
+}
+
+var analyticsSamples = map[string]any{
+	"dashboard_trend.json": sampleTrend,
+	"analytics_trend.json": AnalyticsTrendResponse{
+		TrendResponse: TrendResponse{
+			Period: periodDay, MinSample: 5, Points: daysPts,
+			Series: []TrendSeries{
+				{Characteristic: chCT, Values: []ValuePoint{vpGap, vpSmallV, vpOK}},
+				{Characteristic: chTeam, Values: []ValuePoint{vpGap, vpGap, vpSmallV}},
+			},
+			Summary: TrendSummary{Employees: 40, MeasuredEmployees: 32, AttemptsInPeriod: 55},
+		},
+		DefaultIDs: []int64{1, 3},
+		Characteristics: []CharacteristicCoverage{
+			{CharacteristicRef: chCT, Employees: 32, Attempts: 50, Eligible: true},
+			{CharacteristicRef: chDsc, Employees: 0, Attempts: 0, Eligible: false},
+			{CharacteristicRef: chTeam, Employees: 3, Attempts: 4, Eligible: false},
+		},
+	},
+	"team_status.json": TeamStatus{
+		AsOf: "2026-10-20", InactiveDays: 30, DropThreshold: 15,
+		KPIs: TeamKPIs{Employees: 40, Participated: 34, NoAttempts: 6, ActiveRecently: 18, Inactive: 16, ParticipationRate: ptr(0.85)},
+		Tests: []TestCompletion{
+			{ID: 9, Title: "Планирование смены", Completed: 30, Employees: 40, Rate: ptr(0.75)},
+		},
+		Attention: Attention{
+			Total: 22, Counts: AttentionCounts{NoFirstTest: 6, Inactive: 16, Drop: 3},
+			Items: []AttentionItem{
+				{User: UserRef{ID: 8, FullName: "Дана Ахметова"}, Department: aDeptOff, LastAttemptAt: &t0,
+					Reasons: []Reason{
+						{Code: "drop", CharacteristicID: ptr(int64(1)), Delta: ptr(-22.5), At: "2026-10-01"},
+						{Code: "inactive", Days: ptr(41)},
+					}},
+				{User: UserRef{ID: 7, FullName: "Арман Нурланов"}, Department: nil, LastAttemptAt: nil,
+					Reasons: []Reason{{Code: "no_first_test"}}},
+			},
+		},
+	},
+	"analytics_participation.json": ParticipationResponse{
+		Period:  periodDay,
+		Company: ParticipationCompany{Employees: 40, Participated: 22, Attempts: 55, Rate: ptr(0.55)},
+		Departments: []ParticipationDepartment{
+			{Department: aDept, Employees: 12, Participated: 7, Attempts: 15, Rate: ptr(0.5833), Insufficient: false},
+			{Department: aDeptOff, Employees: 3, Participated: 2, Attempts: 2, Rate: nil, Insufficient: true},
+			{Department: nil, Employees: 25, Participated: 13, Attempts: 38, Rate: ptr(0.52), Insufficient: false},
+		},
+		Tests: []TestCompletion{
+			{ID: 9, Title: "Планирование смены", Completed: 18, Employees: 40, Rate: ptr(0.45)},
+		},
+	},
+	"analytics_departments.json": DepartmentsResponse{
+		Period: periodDay, Points: daysPts,
+		Blocks: []DepartmentsBlock{{
+			Characteristic: chCT,
+			Company:        CompanySeries{Values: []ValuePoint{vpGap, vpOK, vpOK2}},
+			Departments: []DepartmentSeries{
+				{Department: aDept, Employees: 12, AttemptsInPeriod: 20, Values: []ValuePoint{vpGap, vpOK, vpOK},
+					Current: DepartmentCurrent{ValuePoint: ValuePoint{Value: ptr(63.0), Employees: 12, Attempts: 25}, VsCompany: ptr(1.6)}},
+				{Department: aDeptOff, Employees: 3, AttemptsInPeriod: 2, Values: []ValuePoint{vpGap, vpSmall, vpSmall},
+					Current: DepartmentCurrent{ValuePoint: vpSmall, VsCompany: nil}},
+				{Department: nil, Employees: 25, AttemptsInPeriod: 30, Values: []ValuePoint{vpGap, vpOK, vpOK2},
+					Current: DepartmentCurrent{ValuePoint: vpOK2, VsCompany: ptr(0.0)}},
+			},
+		}},
+	},
+	"analytics_employees.json": AnalyticsEmployeeList{Total: 3, Items: []AnalyticsEmployee{
+		{ID: 7, FullName: "Арман Нурланов", JobTitle: "Инженер ПТО", Department: nil, Attempts: 0, LastAttemptAt: nil, DataState: "no_data"},
+		{ID: 8, FullName: "Дана Ахметова", JobTitle: "", Department: aDeptOff, Attempts: 2, LastAttemptAt: &t0, DataState: "stale"},
+		{ID: 9, FullName: "Ерлан Касымов", JobTitle: "Прораб", Department: aDept, Attempts: 5, LastAttemptAt: &t1, DataState: "ok"},
+	}},
+	"analytics_employee.json": EmployeeAnalytics{
+		User: AnalyticsUser{ID: 7, FullName: "Арман Нурланов", JobTitle: "Инженер ПТО", Department: nil, Status: "blocked", LastAttemptAt: &t1},
+		AsOf: "2026-10-20",
+		Current: []EmployeeCurrent{
+			{Characteristic: chCT, Score: 70, MeasuredAt: t1, Company: vpOK2, Department: vpSmall},
+			{Characteristic: chTeam, Score: 0, MeasuredAt: t1, Company: vpSmall, Department: vpSmall},
+		},
+		History: []TimelineEntry{
+			{AttemptID: 41, AssessmentTitle: "Планирование смены", CompletedAt: t1, Scores: sampleScores},
+		},
+	},
+	"analytics_ranking.json": RankingResponse{AsOf: "2026-10-20", MinSample: 5, Blocks: []RankingBlock{
+		{Characteristic: chCT, Insufficient: false,
+			Employees: RankingEmployees{Total: 30, Items: []RankingEmployee{
+				{Rank: 1, User: UserRef{ID: 9, FullName: "Ерлан Касымов"}, Department: aDept, Score: 91.7, MeasuredAt: t1},
+				{Rank: 1, User: UserRef{ID: 8, FullName: "Дана Ахметова"}, Department: aDeptOff, Score: 91.7, MeasuredAt: t0},
+				{Rank: 3, User: UserRef{ID: 7, FullName: "Арман Нурланов"}, Department: nil, Score: 70, MeasuredAt: t1},
+			}},
+			Departments: []RankingDepartment{
+				{Rank: 1, Department: aDept, Value: 72.4, Employees: 12, Attempts: 25},
+				{Rank: 2, Department: nil, Value: 61.0, Employees: 18, Attempts: 45},
+			}},
+		{Characteristic: chTeam, Insufficient: true,
+			Employees:   RankingEmployees{Total: 3, Items: []RankingEmployee{}},
+			Departments: []RankingDepartment{}},
+	}},
+	"analytics_changes.json": ChangesResponse{Threshold: 15, Total: 2, Items: []Change{
+		{User: UserRef{ID: 8, FullName: "Дана Ахметова"}, Department: aDeptOff, CharacteristicID: 1,
+			From: ChangePoint{Score: 80, At: t0}, To: ChangePoint{Score: 57.5, At: t1}, Delta: -22.5},
+		{User: UserRef{ID: 7, FullName: "Арман Нурланов"}, Department: nil, CharacteristicID: 5,
+			From: ChangePoint{Score: 50, At: t0}, To: ChangePoint{Score: 66.67, At: t1}, Delta: 16.67},
+	}},
+}
+
+func init() {
+	for name, v := range analyticsSamples {
+		samples[name] = v
+	}
+}
+
 // samples maps each golden file to the DTO value it freezes.
 var samples = map[string]any{
 	"me.json": Me{

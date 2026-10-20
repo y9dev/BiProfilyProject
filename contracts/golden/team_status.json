@@ -1,0 +1,69 @@
+{
+  "asOf": "2026-10-20",
+  "inactiveDays": 30,
+  "dropThreshold": 15,
+  "kpis": {
+    "employees": 40,
+    "participated": 34,
+    "noAttempts": 6,
+    "activeRecently": 18,
+    "inactive": 16,
+    "participationRate": 0.85
+  },
+  "tests": [
+    {
+      "id": 9,
+      "title": "Планирование смены",
+      "completed": 30,
+      "employees": 40,
+      "rate": 0.75
+    }
+  ],
+  "attention": {
+    "total": 22,
+    "counts": {
+      "noFirstTest": 6,
+      "inactive": 16,
+      "drop": 3
+    },
+    "items": [
+      {
+        "user": {
+          "id": 8,
+          "fullName": "Дана Ахметова"
+        },
+        "department": {
+          "id": 6,
+          "name": "Снабжение",
+          "active": false
+        },
+        "lastAttemptAt": "2026-10-01T09:30:00Z",
+        "reasons": [
+          {
+            "code": "drop",
+            "characteristicId": 1,
+            "delta": -22.5,
+            "at": "2026-10-01"
+          },
+          {
+            "code": "inactive",
+            "days": 41
+          }
+        ]
+      },
+      {
+        "user": {
+          "id": 7,
+          "fullName": "Арман Нурланов"
+        },
+        "department": null,
+        "lastAttemptAt": null,
+        "reasons": [
+          {
+            "code": "no_first_test"
+          }
+        ]
+      }
+    ]
+  }
+}

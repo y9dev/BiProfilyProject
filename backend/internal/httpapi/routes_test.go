@@ -61,9 +61,18 @@ var contractRoutes = map[string]bool{
 	"POST /api/admin/users/{id}/block":            true,
 	"POST /api/admin/users/{id}/unblock":          true,
 	"POST /api/admin/users/{id}/reset-password":   true,
+	"GET /api/dashboard/trend":                    true,
+	"GET /api/dashboard/team-status":              true,
+	"GET /api/analytics/trend":                    true,
+	"GET /api/analytics/participation":            true,
+	"GET /api/analytics/departments":              true,
+	"GET /api/analytics/employees":                true,
+	"GET /api/analytics/employees/{id}":           true,
+	"GET /api/analytics/ranking":                  true,
+	"GET /api/analytics/changes":                  true,
 }
 
-var managerPrefixes = []string{"/api/characteristics", "/api/departments", "/api/invitations", "/api/manage/"}
+var managerPrefixes = []string{"/api/characteristics", "/api/departments", "/api/invitations", "/api/manage/", "/api/dashboard/"}
 
 func offlineServer() *Server {
 	return New(Deps{Users: users.New(nil), Sessions: auth.NewManager(nil, false)})
@@ -100,6 +109,9 @@ func TestRouteTable(t *testing.T) {
 			t.Errorf("%s is a mutation without CSRF", p)
 		}
 		if strings.HasPrefix(r.Path, "/api/admin/") && !slices.Equal(r.Roles, rolesAdmin) {
+			t.Errorf("%s roles = %v, want %v", p, r.Roles, rolesAdmin)
+		}
+		if strings.HasPrefix(r.Path, "/api/analytics/") && !slices.Equal(r.Roles, rolesAdmin) {
 			t.Errorf("%s roles = %v, want %v", p, r.Roles, rolesAdmin)
 		}
 		for _, prefix := range managerPrefixes {

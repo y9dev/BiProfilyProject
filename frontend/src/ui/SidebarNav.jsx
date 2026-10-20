@@ -24,7 +24,14 @@ function buildSections(role) {
     })
   }
   if (role === 'admin') {
-    sections.push({ id: 'admin', titleKey: 'nav.admin', items: [{ to: '/admin', labelKey: 'nav.admin' }] })
+    sections.push({
+      id: 'admin',
+      titleKey: 'nav.admin',
+      items: [
+        { to: '/analytics', labelKey: 'nav.analytics' },
+        { to: '/admin', labelKey: 'nav.admin' },
+      ],
+    })
   }
   return sections
 }

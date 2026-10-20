@@ -1,0 +1,154 @@
+{
+  "period": {
+    "from": "2026-10-18",
+    "to": "2026-10-20",
+    "granularity": "day",
+    "timezone": "Asia/Almaty"
+  },
+  "points": [
+    "2026-10-18",
+    "2026-10-19",
+    "2026-10-20"
+  ],
+  "blocks": [
+    {
+      "characteristic": {
+        "id": 1,
+        "name": "Критическое мышление",
+        "nameI18n": {
+          "kk": "Сыни ойлау",
+          "ru": "Критическое мышление"
+        },
+        "core": true
+      },
+      "company": {
+        "values": [
+          {
+            "value": null,
+            "employees": 0,
+            "attempts": 0,
+            "insufficient": true
+          },
+          {
+            "value": 61.4,
+            "employees": 12,
+            "attempts": 30,
+            "insufficient": false
+          },
+          {
+            "value": 64.2,
+            "employees": 30,
+            "attempts": 70,
+            "insufficient": false
+          }
+        ]
+      },
+      "departments": [
+        {
+          "department": {
+            "id": 3,
+            "name": "Отдел продаж",
+            "active": true
+          },
+          "employees": 12,
+          "attemptsInPeriod": 20,
+          "values": [
+            {
+              "value": null,
+              "employees": 0,
+              "attempts": 0,
+              "insufficient": true
+            },
+            {
+              "value": 61.4,
+              "employees": 12,
+              "attempts": 30,
+              "insufficient": false
+            },
+            {
+              "value": 61.4,
+              "employees": 12,
+              "attempts": 30,
+              "insufficient": false
+            }
+          ],
+          "current": {
+            "value": 63,
+            "employees": 12,
+            "attempts": 25,
+            "insufficient": false,
+            "vsCompany": 1.6
+          }
+        },
+        {
+          "department": {
+            "id": 6,
+            "name": "Снабжение",
+            "active": false
+          },
+          "employees": 3,
+          "attemptsInPeriod": 2,
+          "values": [
+            {
+              "value": null,
+              "employees": 0,
+              "attempts": 0,
+              "insufficient": true
+            },
+            {
+              "value": null,
+              "employees": 3,
+              "attempts": 4,
+              "insufficient": true
+            },
+            {
+              "value": null,
+              "employees": 3,
+              "attempts": 4,
+              "insufficient": true
+            }
+          ],
+          "current": {
+            "value": null,
+            "employees": 3,
+            "attempts": 4,
+            "insufficient": true,
+            "vsCompany": null
+          }
+        },
+        {
+          "department": null,
+          "employees": 25,
+          "attemptsInPeriod": 30,
+          "values": [
+            {
+              "value": null,
+              "employees": 0,
+              "attempts": 0,
+              "insufficient": true
+            },
+            {
+              "value": 61.4,
+              "employees": 12,
+              "attempts": 30,
+              "insufficient": false
+            },
+            {
+              "value": 64.2,
+              "employees": 30,
+              "attempts": 70,
+              "insufficient": false
+            }
+          ],
+          "current": {
+            "value": 64.2,
+            "employees": 30,
+            "attempts": 70,
+            "insufficient": false,
+            "vsCompany": 0
+          }
+        }
+      ]
+    }
+  ]
+}

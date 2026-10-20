@@ -1,4 +1,6 @@
-// Employee main page: skills first (widget + radar), then trends, tests to take, history.
+// Main page. Employees: skills first (widget + radar), then trends, tests to take, history (unchanged).
+// Manager/admin (dashboardVariant 'staff'/'staff-gate'): CompanyTrendCard in the radar slot and TeamStatus in
+// the trends slot, each fetching on its own; everything else keeps its place.
 // On xl the widget is a fixed 20rem column beside the radar; below xl everything stacks.
 import { useEffect } from 'react'
 import { useAuth } from '../../auth/context'
@@ -8,6 +10,9 @@ import { useAsync } from '../../lib/useAsync'
 import Async from '../../ui/Async'
 import PageHeader from '../../ui/PageHeader'
 import Skeleton from '../../ui/Skeleton'
+import { DashboardTrendCard } from '../analytics/CompanyTrendCard'
+import { dashboardVariant } from '../analytics/dashboardVariant'
+import TeamStatus from '../analytics/TeamStatus'
 import ManagerEntryPoints from '../manager/ManagerEntryPoints'
 import AssessmentCatalog from './AssessmentCatalog'
 import { purgeOldDrafts } from './draftStore'
@@ -53,27 +58,40 @@ export default function Dashboard() {
       <div className="space-y-6">
         <ManagerEntryPoints />
         <Async status={status} onRetry={reload} skeleton={<DashboardSkeleton />}>
-          {data && (
-            data.profile.stats.completed === 0 ? (
+          {data && (() => {
+            const variant = dashboardVariant({ role: me?.role, completed: data.profile.stats.completed })
+            if (variant === 'employee-gate' || variant === 'staff-gate') {
               // First-test gate: only the first test (the API returns just that one) and no metrics yet.
+              // Staff see the company cards instead of StatsLocked.
+              return (
+                <>
+                  <div className="grid items-stretch gap-6 xl:grid-cols-[20rem_minmax(0,1fr)]">
+                    <ProfileWidget me={me} />
+                    <AssessmentCatalog
+                      items={data.assessments}
+                      title={t('employee.first.title')}
+                      intro={t('employee.first.intro')}
+                    />
+                  </div>
+                  {variant === 'staff-gate' ? (
+                    <>
+                      <DashboardTrendCard />
+                      <TeamStatus />
+                    </>
+                  ) : (
+                    <StatsLocked />
+                  )}
+                </>
+              )
+            }
+            const staff = variant === 'staff'
+            return (
               <>
                 <div className="grid items-stretch gap-6 xl:grid-cols-[20rem_minmax(0,1fr)]">
                   <ProfileWidget me={me} />
-                  <AssessmentCatalog
-                    items={data.assessments}
-                    title={t('employee.first.title')}
-                    intro={t('employee.first.intro')}
-                  />
+                  {staff ? <DashboardTrendCard /> : <StatsPanel profile={data.profile} />}
                 </div>
-                <StatsLocked />
-              </>
-            ) : (
-              <>
-                <div className="grid items-stretch gap-6 xl:grid-cols-[20rem_minmax(0,1fr)]">
-                  <ProfileWidget me={me} />
-                  <StatsPanel profile={data.profile} />
-                </div>
-                <TrendsPanel profile={data.profile} />
+                {staff ? <TeamStatus /> : <TrendsPanel profile={data.profile} />}
                 <AssessmentCatalog
                   items={data.assessments.filter((a) => !a.completed)}
                   allDone={data.assessments.length > 0}
@@ -81,7 +99,7 @@ export default function Dashboard() {
                 <Timeline timeline={data.profile.timeline} />
               </>
             )
-          )}
+          })()}
         </Async>
       </div>
     </div>

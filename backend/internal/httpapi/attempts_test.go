@@ -388,24 +388,26 @@ func TestProfile_MeanAndTimeline(t *testing.T) {
 		t.Fatalf("available = %d, want 1 (Spare)", p.Stats.Available)
 	}
 	// c1: Alpha 0, Beta 66.67 -> mean 33.34 (rounded) over 2 attempts; c2: Beta 100, Gamma 100 -> 100 over 2.
-	if len(p.Characteristics) != 2 {
-		t.Fatalf("characteristics: %+v", p.Characteristics)
+	// The profile always lists the default characteristics (count 0 when unmeasured).
+	byID := map[int64]dto.ProfileCharacteristic{}
+	for _, ch := range p.Characteristics {
+		byID[ch.ID] = ch
 	}
-	c1, c2 := p.Characteristics[0], p.Characteristics[1]
-	if c1.ID != c[0] || c1.Count != 2 || c1.Mean != scoring.Mean([]float64{0, 66.67}) {
+	c1, c2 := byID[c[0]], byID[c[1]]
+	if c1.Count != 2 || c1.Mean != scoring.Mean([]float64{0, 66.67}) {
 		t.Errorf("c1: %+v", c1)
 	}
-	if c2.ID != c[1] || c2.Count != 2 || c2.Mean != 100 {
+	if c2.Count != 2 || c2.Mean != 100 {
 		t.Errorf("c2: %+v", c2)
 	}
 	if c1.NameI18n == nil {
 		t.Errorf("default characteristic needs nameI18n: %+v", c1)
 	}
 
-	// A fresh user has an empty (non-null) profile.
+	// A fresh user has an empty (non-null) timeline.
 	_, jNew := empUser(t, srv, "fresh")
 	raw := do(t, srv, jNew, "GET", "/api/me/profile", nil, "").Body.String()
-	if !strings.Contains(raw, `"characteristics":[]`) || !strings.Contains(raw, `"timeline":[]`) {
+	if !strings.Contains(raw, `"timeline":[]`) {
 		t.Errorf("empty profile must serialize arrays: %s", raw)
 	}
 }

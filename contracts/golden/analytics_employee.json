@@ -1,0 +1,93 @@
+{
+  "user": {
+    "id": 7,
+    "fullName": "Арман Нурланов",
+    "jobTitle": "Инженер ПТО",
+    "department": null,
+    "status": "blocked",
+    "lastAttemptAt": "2026-10-15T14:05:00Z"
+  },
+  "asOf": "2026-10-20",
+  "current": [
+    {
+      "characteristic": {
+        "id": 1,
+        "name": "Критическое мышление",
+        "nameI18n": {
+          "kk": "Сыни ойлау",
+          "ru": "Критическое мышление"
+        },
+        "core": true
+      },
+      "score": 70,
+      "measuredAt": "2026-10-15T14:05:00Z",
+      "company": {
+        "value": 64.2,
+        "employees": 30,
+        "attempts": 70,
+        "insufficient": false
+      },
+      "department": {
+        "value": null,
+        "employees": 3,
+        "attempts": 4,
+        "insufficient": true
+      }
+    },
+    {
+      "characteristic": {
+        "id": 5,
+        "name": "Работа в команде",
+        "nameI18n": null,
+        "core": false
+      },
+      "score": 0,
+      "measuredAt": "2026-10-15T14:05:00Z",
+      "company": {
+        "value": null,
+        "employees": 3,
+        "attempts": 4,
+        "insufficient": true
+      },
+      "department": {
+        "value": null,
+        "employees": 3,
+        "attempts": 4,
+        "insufficient": true
+      }
+    }
+  ],
+  "history": [
+    {
+      "attemptId": 41,
+      "assessmentTitle": "Планирование смены",
+      "completedAt": "2026-10-15T14:05:00Z",
+      "scores": [
+        {
+          "characteristicId": 1,
+          "name": "Критическое мышление",
+          "nameI18n": {
+            "kk": "Сыни ойлау",
+            "ru": "Критическое мышление"
+          },
+          "score": 66.67
+        },
+        {
+          "characteristicId": 3,
+          "name": "Дисциплина",
+          "nameI18n": {
+            "kk": "Тәртіптілік",
+            "ru": "Дисциплина"
+          },
+          "score": 100
+        },
+        {
+          "characteristicId": 5,
+          "name": "Работа в команде",
+          "nameI18n": null,
+          "score": 0
+        }
+      ]
+    }
+  ]
+}

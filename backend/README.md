@@ -15,7 +15,8 @@ internal/auth          argon2id passwords, Redis sessions, middleware (auth, ava
 internal/users         user repository
 internal/invitations   invitations.Repository (frozen interface; implemented in Steps 3B and 5B)
 internal/admin         admin read side (user search, audit)
-internal/httpapi       routing (routes.go: protected()/public() + route registry), handlers
+internal/analytics     dashboard/analytics engine: analytics.Repo (frozen interface, api.go), period resolution, Almaty "today", SQL event sweep, rules
+internal/httpapi       routing (routes.go: protected()/public() + route registry), handlers (analytics.go: dashboard + analytics HTTP layer, cache)
 internal/httpapi/dto   frozen HTTP contract: request/response structs with json tags
 ```
 
@@ -88,6 +89,10 @@ go test ./... -count=1 -p 1
 Integration tests (`internal/httpapi`, `internal/migrate`) skip when Postgres or Redis is unreachable.
 `internal/httpapi` tests migrate and truncate the target database: point `TEST_PG_DSN` at a test database.
 `internal/migrate` tests need an explicit `TEST_PG_DSN` and run in throwaway databases they create and drop.
+`internal/analytics` tests truncate the tables they seed in the same database. Always run with **`-p 1`**: packages share
+the database (and the httpapi tests `FLUSHDB` Redis), so parallel package runs interfere.
+`internal/httpapi/analytics_http_test.go` replaces the engine with a fake `analytics.Repo` (`Deps.Analytics`, `Deps.AnalyticsTimeout`)
+and covers the authz matrix, every validation row, 404s, manager redaction, the cache and the 503 timeout.
 
 ## Route registration
 
@@ -151,6 +156,15 @@ Role `auth` = any signed-in active user; `mgr` = manager or admin; `admin` = adm
 | PUT `/api/admin/users/{id}/role` | admin | yes | `{role: manager\|employee}` | 200 + sessions revoked | 409 `self_change` / `last_admin`; 422 |
 | POST `/api/admin/users/{id}/block` and `/unblock` | admin | yes | - | 200 + sessions revoked on block | 409 `self_block` |
 | POST `/api/admin/users/{id}/reset-password` | admin | yes | `{password(8+)}` | 204 + `DestroyByUser` (all sessions revoked) | 422; 404 |
+| GET `/api/dashboard/trend` | mgr | yes | `period` (`7d\|30d\|90d\|12m\|all`, default `90d`; no `custom`) | 200 `TrendResponse` (core characteristics) | 422; 503 `analytics_timeout` |
+| GET `/api/dashboard/team-status` | mgr | yes | - | 200 `TeamStatus` (KPIs, per-test completion, attention list) as of today | 503 `analytics_timeout` |
+| GET `/api/analytics/trend` | admin | yes | `period`, `from`, `to`, `characteristics` (repeated) | 200 `AnalyticsTrendResponse` (series + `defaultIds` + catalog with coverage) | 422; 503 |
+| GET `/api/analytics/participation` | admin | yes | `period`, `from`, `to`, `departmentId` | 200 `ParticipationResponse` | 422; 503 |
+| GET `/api/analytics/departments` | admin | yes | `departments` (repeated, 1-8, id or `none`), `characteristics`, `period`, `from`, `to` | 200 `DepartmentsResponse` (one block per characteristic) | 422; 503 |
+| GET `/api/analytics/employees` | admin | yes | `search` (<= 100 chars), `departmentId`, `data=all\|no_data\|stale`, `limit` (1-200, default 50), `offset` | 200 `{total, items}` (active employees only) | 422; 503 |
+| GET `/api/analytics/employees/{id}` | admin | yes | `period`, `from`, `to` | 200 `EmployeeAnalytics` (blocked employees allowed; every characteristic they have) | 404 `not_found` (missing or not `role=employee`); 422; 503 |
+| GET `/api/analytics/ranking` | admin | yes | `characteristics`, `period`, `from`, `to`, `departmentId`, `limit` (per block), `offset` | 200 `RankingResponse` (one block per characteristic) | 422; 503 |
+| GET `/api/analytics/changes` | admin | yes | `characteristics`, `period`, `from`, `to`, `departmentId`, `threshold` (1-100, default 15), `limit`, `offset` | 200 `ChangesResponse` (by \|delta\| desc) | 422; 503 |
 
 Removed with the redesign: the legacy unauthenticated `/api/questions*`, `/api/evaluate`, `/api/results/*`,
 `/api/users/{userId}/latest`, and `/api/traits*`, `/api/tests*`, `/api/attempts*`, `/api/profile`, `/api/users*`,
@@ -160,7 +174,55 @@ DTO and golden file per row: `me.json` (me, login, register, avatar PUT), `regis
 `profile.json`, `assessments_list.json`, `take_view.json`, `submit_request.json`, `submit_result.json`, `attempt_result.json`,
 `characteristics.json`, `departments.json`, `department_delete.json`, `invitation.json`, `invitations_list.json`,
 `registrations.json`, `manage_assessments_list.json`, `manage_assessment.json`, `create_assessment_request.json`,
-`create_assessment_result.json`, `admin_users.json`, `error.json`, `error_validation.json`.
+`create_assessment_result.json`, `admin_users.json`, `error.json`, `error_validation.json`, `dashboard_trend.json`,
+`team_status.json`, `analytics_trend.json`, `analytics_participation.json`, `analytics_departments.json`,
+`analytics_employees.json`, `analytics_employee.json`, `analytics_ranking.json`, `analytics_changes.json`.
+
+## Dashboard and analytics
+
+Plan: `.omc/plans/manager-admin-analytics.md`. Nine GET routes (table above): two dashboard routes for manager+admin,
+seven analytics routes for admin only.
+
+**Query parameters.**
+- `period`: `7d | 30d | 90d | 12m | all | custom` (default `90d`). `from`/`to` (`YYYY-MM-DD`, inclusive) only with `custom`, where both are required.
+  Windows: `7d` = today-6..today, `30d`/`90d` likewise, `12m` = today-1y+1d..today, `all` = earliest population measurement..today.
+- `characteristics`: repeated (`characteristics=1&characteristics=7`), max 10 after deduplication, order kept; omitted = default
+  selection (4 core + up to 3 non-core with the highest coverage and n >= 5).
+- `departmentId`: one id or `none` (no department); `departments`: repeated, 1-8 ids or `none`. Inactive departments are valid.
+- Unknown or inapplicable parameters are ignored (no 422).
+
+**Validation (422 `{"error":"validation","errors":[{path, code}]}`).** `period` `invalid` (unknown value, or `custom` on the dashboard);
+`from`/`to` `required` (custom without a date); `from` `unexpected` (dates without `custom`); `invalid_date`; `from` `after_to`;
+`to` `in_future` (after today); `to` `span_too_large` (> 3660 days); `characteristics` `too_many` / `invalid` / `unknown`;
+`departmentId` / `departments` `unknown` (malformed or nonexistent), `departments` `count` (0 or > 8);
+`limit` (> 200 or < 1), `offset` (< 0), `threshold` (outside 1-100), `data` `invalid`; `search` `too_long` (> 100 characters).
+
+**Errors.** 401 anonymous; 403 `forbidden` (wrong role) or `avatar_required`; 404 `not_found` (employee view only);
+**503 `{"error":"analytics_timeout"}`** when the per-request deadline (`analytics.QueryTimeout` = 5 s) expires
+(`context.DeadlineExceeded` or Postgres `57014 query_canceled`), on every route; 500 `db error` otherwise.
+
+**Semantics.**
+- Population: `role='employee' AND status='active'` at request time (managers, admins, blocked users excluded everywhere,
+  except the blocked employee's own detail view). Past points change when the population changes (by design).
+- Value at a date D: per employee the latest measurement with day <= D (one vote per employee, same-day attempts: latest wins), averaged.
+  Attempts on soft-deleted assessments count; per-test completion lists only visible assessments.
+- Buckets: day (span <= 92 days), ISO week ending Sunday (93-400), month (> 400); the last bucket ends at `to`.
+- Small samples: aggregates over fewer than 5 employees carry `insufficient:true`. On `/api/dashboard/trend` a **manager**
+  gets `value:null` for those points (the HTTP layer redacts); an admin gets the value (drawn dimmed). On `/api/dashboard/team-status` a manager gets per-test `rate:null` when the population is below 5. Every group view
+  (departments, ranking departments, participation rows, employee-view comparisons) is null below 5 for everyone.
+- Team status: inactive = last attempt 30+ days ago, drop = latest - previous <= -15, attention items capped at 50.
+
+**Timezone.** All calendar dates are Asia/Almaty (UTC+5). `today` is computed once per request in Go
+(`analytics.Today`, embedded `time/tzdata`, independent of the host OS) and passed to every query; SQL never uses `now()`
+for business logic. Measurement day = `(completed_at AT TIME ZONE 'Asia/Almaty')::date`. Keep `postgres:16-alpine` current
+(tzdata).
+
+**Cache.** Redis, TTL 60 s (`analytics.CacheTTL`), key `analytics:v1:<route>:<manager|admin>:<today>:<hash of parsed params>`.
+Only 200 responses are cached; on a Redis error the request is computed uncached (fail open). There is no invalidation:
+numbers can be up to 60 s stale. Manager and admin entries are separate because manager responses are redacted.
+Identical concurrent cache misses (same key) are collapsed into one computation (in-process single-flight), and at most
+2 uncached computations run at once per process (semaphore; protects the pgx pool). Waiting for a slot or for a shared
+computation is bounded by the request deadline and ends in 503 `analytics_timeout`.
 
 ## Operations (ops/)
 

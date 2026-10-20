@@ -1,0 +1,44 @@
+{
+  "id": 10,
+  "title": "Работа с подрядчиком",
+  "description": "",
+  "hidden": false,
+  "expiresAt": "2026-12-31T18:00:00Z",
+  "status": "active",
+  "attemptCount": 1,
+  "createdAt": "2026-10-01T09:30:00Z",
+  "updatedAt": "2026-10-15T14:05:00Z",
+  "questions": [
+    {
+      "id": 100,
+      "position": 0,
+      "text": "Подрядчик срывает срок. Что вы сделаете?",
+      "type": "single",
+      "options": [
+        {
+          "id": 1000,
+          "position": 0,
+          "text": "Позвоню и выясню причину",
+          "effects": [
+            {
+              "characteristicId": 1,
+              "level": "high",
+              "direction": 1
+            },
+            {
+              "characteristicId": 3,
+              "level": "low",
+              "direction": -1
+            }
+          ]
+        },
+        {
+          "id": 1001,
+          "position": 1,
+          "text": "Сразу сообщу руководителю",
+          "effects": []
+        }
+      ]
+    }
+  ]
+}

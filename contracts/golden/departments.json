@@ -1,0 +1,14 @@
+[
+  {
+    "id": 3,
+    "name": "Отдел продаж",
+    "active": true,
+    "userCount": 12
+  },
+  {
+    "id": 6,
+    "name": "Снабжение",
+    "active": false,
+    "userCount": 2
+  }
+]

@@ -1,0 +1,14 @@
+{
+  "id": 12,
+  "code": "K7Q2M9XR4TBA",
+  "url": "https://bi.example.kz/register?code=K7Q2M9XR4TBA",
+  "expiresAt": "2026-12-31T18:00:00Z",
+  "maxRegistrations": 25,
+  "registrationsCount": 3,
+  "status": "active",
+  "createdAt": "2026-10-01T09:30:00Z",
+  "createdBy": {
+    "id": 2,
+    "fullName": "Айгерим Садыкова"
+  }
+}

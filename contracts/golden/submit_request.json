@@ -1,0 +1,23 @@
+{
+  "answers": [
+    {
+      "questionId": 100,
+      "optionIds": [
+        1000
+      ]
+    },
+    {
+      "questionId": 101,
+      "optionIds": [
+        1002,
+        1003
+      ]
+    },
+    {
+      "questionId": 102,
+      "optionIds": [
+        1007
+      ]
+    }
+  ]
+}

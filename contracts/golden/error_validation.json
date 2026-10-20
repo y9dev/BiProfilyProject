@@ -1,0 +1,13 @@
+{
+  "error": "validation",
+  "errors": [
+    {
+      "path": "questions[2].options[1].effects[0].characteristicId",
+      "code": "unknown_characteristic"
+    },
+    {
+      "path": "title",
+      "code": "required"
+    }
+  ]
+}

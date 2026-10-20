@@ -1,0 +1,60 @@
+services:
+  # --- Инфраструктура ---
+  postgres:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: bigroup
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d bigroup"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    # requirepass only when REDIS_PASSWORD is set (the backend gets the same value).
+    environment:
+      REDIS_PASSWORD: ${REDIS_PASSWORD:-}
+    command: ["sh", "-c", "exec redis-server $${REDIS_PASSWORD:+--requirepass \"$$REDIS_PASSWORD\"}"]
+    healthcheck:
+      test: ["CMD-SHELL", "[ -z \"$$REDIS_PASSWORD\" ] || export REDISCLI_AUTH=\"$$REDIS_PASSWORD\"; redis-cli ping | grep -q PONG"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+  # --- Бэкенд (Go) ---
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    environment:
+      - HTTP_ADDR=:8080
+      - PG_DSN=postgres://postgres:postgres@postgres:5432/bigroup?sslmode=disable
+      - REDIS_ADDR=redis:6379
+      - REDIS_PASSWORD=${REDIS_PASSWORD:-}
+      - MIGRATE=1
+      # Required (set in .env; APP_ENV=dev for local work). Outside dev the backend
+      # refuses to start with a non-https FRONT_ORIGIN or a weak ADMIN_PASSWORD.
+      - APP_ENV=${APP_ENV:?set APP_ENV in .env (dev for local development)}
+      - MIGRATE_RESET=${MIGRATE_RESET:-0}
+      - FRONT_ORIGIN=${FRONT_ORIGIN:-http://localhost:5173}
+      # Empty = backend default: Secure cookies unless APP_ENV=dev.
+      - COOKIE_SECURE=${COOKIE_SECURE:-}
+      # Comma-separated CIDRs of reverse proxies whose X-Forwarded-For is trusted.
+      - TRUSTED_PROXIES=${TRUSTED_PROXIES:-}
+      - ADMIN_LOGIN=${ADMIN_LOGIN:-admin}
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD:?set ADMIN_PASSWORD in .env}
+    ports:
+      - "8080:8080"
+    restart: unless-stopped
+volumes:
+  pgdata:

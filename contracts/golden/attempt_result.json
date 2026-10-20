@@ -1,0 +1,32 @@
+{
+  "attemptId": 42,
+  "assessmentId": 10,
+  "assessmentTitle": "Работа с подрядчиком",
+  "completedAt": "2026-10-15T14:05:00Z",
+  "scores": [
+    {
+      "characteristicId": 1,
+      "name": "Критическое мышление",
+      "nameI18n": {
+        "kk": "Сыни ойлау",
+        "ru": "Критическое мышление"
+      },
+      "score": 66.67
+    },
+    {
+      "characteristicId": 3,
+      "name": "Дисциплина",
+      "nameI18n": {
+        "kk": "Тәртіптілік",
+        "ru": "Дисциплина"
+      },
+      "score": 100
+    },
+    {
+      "characteristicId": 5,
+      "name": "Работа в команде",
+      "nameI18n": null,
+      "score": 0
+    }
+  ]
+}

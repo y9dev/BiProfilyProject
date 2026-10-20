@@ -1,0 +1,275 @@
+@import "tailwindcss";
+
+/*
+ * BI Profily design tokens.
+ * Semantic CSS variables live in :root / [data-theme="dark"]; Tailwind utilities
+ * (bg-surface, text-ink, border-line, ...) are generated from them via `@theme inline`.
+ * No gradients, no decorative shadows: hierarchy comes from type, spacing and contrast.
+ */
+
+:root {
+  color-scheme: light;
+  --bg: #f2f4f7;
+  --surface: #ffffff;
+  --surface-2: #e9edf2;
+  --ink: #121c27;
+  --muted: #465362;
+  --faint: #5b6876;
+  --line: #d3dae2;
+  --line-strong: #aeb9c5;
+
+  --primary: #0f4c81;
+  --primary-hover: #0b3b66;
+  --primary-ink: #ffffff;
+  --primary-soft: #e3edf7;
+
+  --success: #146c34;
+  --success-soft: #e1f3e7;
+  --warning: #84520a;
+  --warning-soft: #fdf0d3;
+  --danger: #b42318;
+  --danger-hover: #8f1b12;
+  --danger-ink: #ffffff;
+  --danger-soft: #fce9e7;
+
+  /* Skills palette: core characteristics 1-4 (saturated on white) and neutral extras. */
+  --core-1: #0369a1;
+  --core-2: #15803d;
+  --core-3: #b45309;
+  --core-4: #6d28d9;
+  --extra: #8a96a3;
+
+  --ring: #0f4c81;
+  --overlay: rgb(10 18 28 / 0.55);
+  --shadow-pop: 0 8px 24px rgb(10 18 28 / 0.16);
+}
+
+:root[data-theme="dark"] {
+  color-scheme: dark;
+  --bg: #0d1319;
+  --surface: #151d26;
+  --surface-2: #1d2833;
+  --ink: #e8edf2;
+  --muted: #a8b4c1;
+  --faint: #8e9ba9;
+  --line: #2b3745;
+  --line-strong: #435468;
+
+  --primary: #62a7e6;
+  --primary-hover: #82b9ec;
+  --primary-ink: #07121d;
+  --primary-soft: #14293d;
+
+  --success: #62cd8a;
+  --success-soft: #12301f;
+  --warning: #e8b75a;
+  --warning-soft: #33270d;
+  --danger: #ff8f85;
+  --danger-hover: #ffaba3;
+  --danger-ink: #2a0805;
+  --danger-soft: #3b1815;
+
+  --core-1: #38bdf8;
+  --core-2: #4ade80;
+  --core-3: #fbbf24;
+  --core-4: #c4b5fd;
+  --extra: #7d8a99;
+
+  --ring: #82b9ec;
+  --overlay: rgb(0 0 0 / 0.65);
+  --shadow-pop: 0 8px 24px rgb(0 0 0 / 0.5);
+}
+
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-faint: var(--faint);
+  --color-line: var(--line);
+  --color-line-strong: var(--line-strong);
+  --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-ink: var(--primary-ink);
+  --color-primary-soft: var(--primary-soft);
+  --color-success: var(--success);
+  --color-success-soft: var(--success-soft);
+  --color-warning: var(--warning);
+  --color-warning-soft: var(--warning-soft);
+  --color-danger: var(--danger);
+  --color-danger-hover: var(--danger-hover);
+  --color-danger-ink: var(--danger-ink);
+  --color-danger-soft: var(--danger-soft);
+  --color-ring: var(--ring);
+  --color-overlay: var(--overlay);
+  --shadow-pop: var(--shadow-pop);
+}
+
+@theme {
+  --font-sans: "Golos Text", "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+  --font-mono: ui-monospace, "Cascadia Mono", Consolas, monospace;
+
+  --radius-ctl: 0.375rem;
+  --radius-card: 0.5rem;
+  --radius-dialog: 0.75rem;
+
+  /* 44px minimum touch target */
+  --spacing-touch: 2.75rem;
+  --spacing-sidebar: 17rem;
+  --spacing-topbar: 3.5rem;
+
+  --text-display: 1.75rem;
+  --text-display--line-height: 1.2;
+  --text-title: 1.25rem;
+  --text-title--line-height: 1.3;
+  --text-body: 1rem;
+  --text-body--line-height: 1.5;
+  --text-label: 0.875rem;
+  --text-label--line-height: 1.4;
+  --text-caption: 0.8125rem;
+  --text-caption--line-height: 1.4;
+
+  --breakpoint-xs: 30rem;
+}
+
+@layer base {
+  html {
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--font-sans);
+    font-size: 1rem;
+    line-height: 1.5;
+    overflow-wrap: break-word;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  #root {
+    min-height: 100vh;
+  }
+
+  h1, h2, h3, h4 {
+    overflow-wrap: anywhere;
+    hyphens: auto;
+  }
+
+  a {
+    color: var(--primary);
+  }
+
+  /* Smooth hover/focus/theme changes on interactive and surface elements. */
+  a, button, input, select, textarea, summary, [role="button"] {
+    transition-property: color, background-color, border-color, box-shadow, opacity, transform;
+    transition-duration: 0.16s;
+    transition-timing-function: ease-out;
+  }
+
+  button:not(:disabled):active,
+  a[class*="rounded-ctl"]:active {
+    transform: scale(0.985);
+  }
+
+  body {
+    transition: background-color 0.25s ease, color 0.25s ease;
+  }
+
+  img, svg, video, canvas {
+    max-width: 100%;
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--ring);
+    outline-offset: 2px;
+  }
+
+  ::selection {
+    background: var(--primary-soft);
+    color: var(--ink);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+}
+
+@layer components {
+  .spin {
+    animation: bip-spin 0.8s linear infinite;
+  }
+
+  .pulse {
+    animation: bip-pulse 1.4s ease-in-out infinite;
+  }
+
+  .toast-in {
+    animation: bip-toast-in 0.18s ease-out both;
+  }
+
+  .sheet-in {
+    animation: bip-sheet-in 0.18s ease-out both;
+  }
+
+  /* Subtle entrances: opacity + a few pixels of travel, never layout-shifting. */
+  .page-in {
+    animation: bip-fade-up 0.28s cubic-bezier(0.22, 0.61, 0.36, 1) both;
+  }
+
+  .card-in {
+    animation: bip-fade-up 0.32s cubic-bezier(0.22, 0.61, 0.36, 1) both;
+  }
+
+  .radar-grow {
+    transform-box: view-box;
+    animation: bip-radar-grow 0.6s cubic-bezier(0.22, 0.61, 0.36, 1) both;
+  }
+
+  .bar-grow {
+    transform-origin: left center;
+    animation: bip-bar-grow 0.7s cubic-bezier(0.22, 0.61, 0.36, 1) both;
+  }
+}
+
+@keyframes bip-spin {
+  to { transform: rotate(360deg); }
+}
+
+@keyframes bip-pulse {
+  50% { opacity: 0.45; }
+}
+
+@keyframes bip-toast-in {
+  from { opacity: 0; transform: translateY(8px); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes bip-fade-up {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes bip-bar-grow {
+  from { transform: scaleX(0); }
+  to { transform: scaleX(1); }
+}
+
+@keyframes bip-sheet-in {
+  from { opacity: 0; transform: translateY(12px); }
+  to { opacity: 1; transform: none; }
+}
+
+@keyframes bip-radar-grow {
+  from { opacity: 0; transform: scale(0.3); }
+  to { opacity: 1; transform: none; }
+}

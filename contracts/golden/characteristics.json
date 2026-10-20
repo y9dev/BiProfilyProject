@@ -1,0 +1,19 @@
+[
+  {
+    "id": 1,
+    "name": "Критическое мышление",
+    "nameI18n": {
+      "kk": "Сыни ойлау",
+      "ru": "Критическое мышление"
+    },
+    "isDefault": true,
+    "inUse": true
+  },
+  {
+    "id": 5,
+    "name": "Работа в команде",
+    "nameI18n": null,
+    "isDefault": false,
+    "inUse": false
+  }
+]

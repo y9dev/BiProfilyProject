@@ -1,0 +1,84 @@
+{
+  "characteristics": [
+    {
+      "id": 1,
+      "name": "Критическое мышление",
+      "nameI18n": {
+        "kk": "Сыни ойлау",
+        "ru": "Критическое мышление"
+      },
+      "mean": 72.5,
+      "count": 2
+    },
+    {
+      "id": 3,
+      "name": "Дисциплина",
+      "nameI18n": {
+        "kk": "Тәртіптілік",
+        "ru": "Дисциплина"
+      },
+      "mean": 100,
+      "count": 1
+    },
+    {
+      "id": 5,
+      "name": "Работа в команде",
+      "nameI18n": null,
+      "mean": 0,
+      "count": 1
+    }
+  ],
+  "timeline": [
+    {
+      "attemptId": 40,
+      "assessmentTitle": "Решения на объекте",
+      "completedAt": "2026-10-01T09:30:00Z",
+      "scores": [
+        {
+          "characteristicId": 1,
+          "name": "Критическое мышление",
+          "nameI18n": {
+            "kk": "Сыни ойлау",
+            "ru": "Критическое мышление"
+          },
+          "score": 66.67
+        }
+      ]
+    },
+    {
+      "attemptId": 41,
+      "assessmentTitle": "Планирование смены",
+      "completedAt": "2026-10-15T14:05:00Z",
+      "scores": [
+        {
+          "characteristicId": 1,
+          "name": "Критическое мышление",
+          "nameI18n": {
+            "kk": "Сыни ойлау",
+            "ru": "Критическое мышление"
+          },
+          "score": 66.67
+        },
+        {
+          "characteristicId": 3,
+          "name": "Дисциплина",
+          "nameI18n": {
+            "kk": "Тәртіптілік",
+            "ru": "Дисциплина"
+          },
+          "score": 100
+        },
+        {
+          "characteristicId": 5,
+          "name": "Работа в команде",
+          "nameI18n": null,
+          "score": 0
+        }
+      ]
+    }
+  ],
+  "stats": {
+    "completed": 2,
+    "available": 3
+  }
+}

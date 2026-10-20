@@ -1,0 +1,44 @@
+# deps
+frontend/node_modules/
+# build artifacts
+frontend/dist/
+backend/server.exe
+backend/server
+backend/*.log
+backend/*.pdf
+# binaries / probe leftovers
+backend/tmpprobe/
+# env & secrets
+.env
+backend/.env
+frontend/.env
+
+# backups & dumps
+backups/
+*.dump
+*.sql
+!backend/internal/migrate/migrations/*.sql
+coverage/
+# OS / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# local AI tooling (assistant state, configs, scratch output)
+.omc/
+.claude/
+CLAUDE.md
+CLAUDE.local.md
+.mcp.json
+.playwright-mcp/
+.cursor/
+.cursorrules
+.windsurf/
+.windsurfrules
+.aider*
+.continue/
+.codex/
+.gemini/
+AGENTS.md
+GEMINI.md

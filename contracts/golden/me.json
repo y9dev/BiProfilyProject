@@ -1,0 +1,17 @@
+{
+  "id": 7,
+  "login": "a.nurlanov",
+  "fullName": "Арман Нурланов",
+  "jobTitle": "Инженер ПТО",
+  "department": {
+    "id": 3,
+    "name": "Отдел продаж"
+  },
+  "role": "employee",
+  "avatar": {
+    "universe": "anime",
+    "gender": "male",
+    "style": "tech"
+  },
+  "profileComplete": true
+}

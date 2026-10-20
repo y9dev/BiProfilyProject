@@ -1,0 +1,19 @@
+[
+  {
+    "id": 9,
+    "title": "Планирование смены",
+    "description": "Ситуации на стройплощадке",
+    "expiresAt": null,
+    "questionCount": 8,
+    "completed": true,
+    "attemptId": 41
+  },
+  {
+    "id": 10,
+    "title": "Работа с подрядчиком",
+    "description": "",
+    "expiresAt": "2026-12-31T18:00:00Z",
+    "questionCount": 5,
+    "completed": false
+  }
+]

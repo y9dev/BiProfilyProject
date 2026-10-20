@@ -1,0 +1,26 @@
+[
+  {
+    "id": 9,
+    "title": "Планирование смены",
+    "description": "Ситуации на стройплощадке",
+    "hidden": false,
+    "expiresAt": null,
+    "status": "active",
+    "questionCount": 8,
+    "attemptCount": 14,
+    "createdAt": "2026-10-01T09:30:00Z",
+    "updatedAt": "2026-10-15T14:05:00Z"
+  },
+  {
+    "id": 11,
+    "title": "Черновик опроса",
+    "description": "",
+    "hidden": true,
+    "expiresAt": "2026-12-31T18:00:00Z",
+    "status": "hidden",
+    "questionCount": 3,
+    "attemptCount": 0,
+    "createdAt": "2026-10-15T14:05:00Z",
+    "updatedAt": "2026-10-15T14:05:00Z"
+  }
+]

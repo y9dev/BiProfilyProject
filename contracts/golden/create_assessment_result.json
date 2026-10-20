@@ -1,0 +1,10 @@
+{
+  "id": 10,
+  "warnings": [
+    {
+      "path": "questions",
+      "code": "min_unreachable",
+      "characteristicId": 2
+    }
+  ]
+}

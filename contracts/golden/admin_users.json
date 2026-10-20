@@ -1,0 +1,28 @@
+{
+  "items": [
+    {
+      "id": 1,
+      "login": "admin",
+      "fullName": "Администратор",
+      "jobTitle": "",
+      "department": null,
+      "role": "admin",
+      "status": "active",
+      "createdAt": "2026-10-01T09:30:00Z"
+    },
+    {
+      "id": 7,
+      "login": "a.nurlanov",
+      "fullName": "Арман Нурланов",
+      "jobTitle": "Инженер ПТО",
+      "department": {
+        "id": 3,
+        "name": "Отдел продаж"
+      },
+      "role": "employee",
+      "status": "blocked",
+      "createdAt": "2026-10-15T14:05:00Z"
+    }
+  ],
+  "total": 2
+}

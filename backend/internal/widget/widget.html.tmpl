@@ -1,0 +1,19 @@
+<div class="bip-w" lang="{{.Lang}}"><style>{{.CSS}}</style>
+<article class="bip-w__card">
+<div class="bip-w__avatar" role="img" aria-label="{{.T.Avatar}}">{{if .Avatar}}{{.Avatar}}{{else}}<span class="bip-w__initial" aria-hidden="true">{{.Initial}}</span>{{end}}</div>
+<h2 class="bip-w__name">{{.Name}}</h2>
+{{if .JobTitle}}<p class="bip-w__job">{{.JobTitle}}</p>{{end}}
+{{if .Department}}<p class="bip-w__dept">{{.Department}}</p>{{end}}
+<section class="bip-w__skills">
+<h3 class="bip-w__title">{{.T.Title}}</h3>
+{{if .Empty}}<p class="bip-w__empty">{{.T.Empty}}</p>{{else if .HasRadar}}<svg class="bip-w__radar" viewBox="0 0 200 200" role="img" aria-label="{{.RadarLabel}}">
+{{range .Rings}}<polygon class="bip-w__grid" points="{{.}}"/>{{end}}
+{{range .Spokes}}<line class="bip-w__spoke" x1="100" y1="100" x2="{{printf "%.1f" .X}}" y2="{{printf "%.1f" .Y}}"/>{{end}}
+<polygon class="bip-w__shape" points="{{.Shape}}"/>
+{{range .Axes}}{{if .HasDot}}<circle class="{{.Class}}" cx="{{printf "%.1f" .Dot.X}}" cy="{{printf "%.1f" .Dot.Y}}" r="{{if .Core}}4{{else}}2.6{{end}}"><title>{{.Label}}: {{.Pct}}%</title></circle>{{end}}{{end}}
+</svg>{{else}}<div class="bip-w__radar"></div>{{end}}
+{{if .Core}}<ul class="bip-w__legend">
+{{range .Core}}<li><span class="bip-w__sw {{.Class}}"></span><span class="l">{{.Label}}</span><span class="v">{{.Pct}}%</span></li>
+{{end}}</ul>{{end}}
+</section>
+</article></div>

@@ -1,0 +1,19 @@
+{
+  "universes": [
+    "movies",
+    "anime",
+    "animals",
+    "sports",
+    "fantasy"
+  ],
+  "genders": [
+    "male",
+    "female"
+  ],
+  "styles": [
+    "vibrant",
+    "formal",
+    "calm",
+    "tech"
+  ]
+}

@@ -1,0 +1,15 @@
+[
+  {
+    "fullName": "Арман Нурланов",
+    "jobTitle": "Инженер ПТО",
+    "department": {
+      "id": 3,
+      "name": "Отдел продаж"
+    }
+  },
+  {
+    "fullName": "Дана Ахметова",
+    "jobTitle": "",
+    "department": null
+  }
+]

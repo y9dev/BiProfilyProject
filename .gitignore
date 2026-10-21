@@ -42,3 +42,16 @@ CLAUDE.local.md
 .gemini/
 AGENTS.md
 GEMINI.md
+.agents/
+.agent/
+.kiro/
+.clinerules
+.cline/
+.roo/
+.roomodes
+.opencode/
+.github/copilot-instructions.md
+.superpowers/
+
+# local demo credentials
+demo-accounts.local.md
